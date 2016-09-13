@@ -36,130 +36,129 @@ import org.openqa.selenium.WebElement;
  */
 public class AbstractScrollArea extends org.oneandone.qxwebdriver.ui.core.WidgetImpl implements Scrollable {
 
-	public AbstractScrollArea(WebElement element, QxWebDriver webDriver) {
-		super(element, webDriver);
-	}
+    public AbstractScrollArea(WebElement element, QxWebDriver webDriver) {
+        super(element, webDriver);
+    }
 
-	protected Widget getScrollbar(String direction) {
-		String childControlId = "scrollbar-" + direction;
-		try {
-			org.oneandone.qxwebdriver.ui.Widget scrollBar = waitForChildControl(childControlId, 2);
-			return scrollBar;
-		} catch(TimeoutException e) {
-			return null;
-		}
-	}
+    protected Widget getScrollbar(String direction) {
+        String childControlId = "scrollbar-" + direction;
+        try {
+            org.oneandone.qxwebdriver.ui.Widget scrollBar = waitForChildControl(childControlId, 2);
+            return scrollBar;
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
 
-	public void scrollTo(String direction, Integer position) {
-		Widget scrollBar = getScrollbar(direction);
-		if (scrollBar == null) {
-			return;
-		}
-		jsRunner.runScript("scrollTo", scrollBar.getContentElement(), position);
-	}
+    public void scrollTo(String direction, Integer position) {
+        Widget scrollBar = getScrollbar(direction);
+        if (scrollBar == null) {
+            return;
+        }
+        jsRunner.runScript("scrollTo", scrollBar.getContentElement(), position);
+    }
 
-	public Long getScrollPosition(String direction) {
-		Widget scrollBar = getScrollbar(direction);
-		if (scrollBar == null) {
-			return new Long(0);
-		}
-		return getScrollPosition(scrollBar);
-	}
+    public Long getScrollPosition(String direction) {
+        Widget scrollBar = getScrollbar(direction);
+        if (scrollBar == null) {
+            return new Long(0);
+        }
+        return getScrollPosition(scrollBar);
+    }
 
-	protected Long getScrollPosition(Widget scrollBar) {
-		try {
-			String result = scrollBar.getPropertyValueAsJson("position");
-			return Long.parseLong(result);
-		} catch(com.opera.core.systems.scope.exceptions.ScopeException e) {
-			return null;
-		}
-	}
+    protected Long getScrollPosition(Widget scrollBar) {
+        String result = scrollBar.getPropertyValueAsJson("position");
+        return Long.parseLong(result);
 
-	protected Long getScrollStep(Widget scrollBar) {
-		String result = scrollBar.getPropertyValueAsJson("singleStep");
-		return Long.parseLong(result);
-	}
+    }
 
-	public Long getScrollStep(String direction) {
-		Widget scrollBar = getScrollbar(direction);
-		if (scrollBar == null) {
-			return new Long(0);
-		}
-		return getScrollStep(scrollBar);
-	}
+    protected Long getScrollStep(Widget scrollBar) {
+        String result = scrollBar.getPropertyValueAsJson("singleStep");
+        return Long.parseLong(result);
+    }
 
-	public Long getMaximum(String direction) {
-		Widget scrollBar = getScrollbar(direction);
-		if (scrollBar == null) {
-			return new Long(0);
-		}
-		return getMaximum(scrollBar);
-	}
+    public Long getScrollStep(String direction) {
+        Widget scrollBar = getScrollbar(direction);
+        if (scrollBar == null) {
+            return new Long(0);
+        }
+        return getScrollStep(scrollBar);
+    }
 
-	protected Long getMaximum(Widget scrollBar) {
-		String result = scrollBar.getPropertyValueAsJson("maximum");
-		return Long.parseLong(result);
-	}
+    public Long getMaximum(String direction) {
+        Widget scrollBar = getScrollbar(direction);
+        if (scrollBar == null) {
+            return new Long(0);
+        }
+        return getMaximum(scrollBar);
+    }
 
-	public Widget scrollToChild(String direction, org.openqa.selenium.By locator) {
-		driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
-		WebElement target = null;
-		try {
-			target = contentElement.findElement(locator);
-		} catch (NoSuchElementException e) {}
-		if (target != null && isChildInView(target)) {
-			return driver.getWidgetForElement(target);
-		}
+    protected Long getMaximum(Widget scrollBar) {
+        String result = scrollBar.getPropertyValueAsJson("maximum");
+        return Long.parseLong(result);
+    }
 
-		Long singleStep = getScrollStep(direction);
-		Long maximum = getMaximum(direction);
-		Long scrollPosition = getScrollPosition(direction);
+    public Widget scrollToChild(String direction, org.openqa.selenium.By locator) {
+        driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
+        WebElement target = null;
+        try {
+            target = contentElement.findElement(locator);
+        } catch (NoSuchElementException e) {
+        }
+        if (target != null && isChildInView(target)) {
+            return driver.getWidgetForElement(target);
+        }
 
-		while (scrollPosition < maximum) {
-			// Virtual list items are created on demand, so query the DOM again
-			try {
-				target = contentElement.findElement(locator);
-			} catch (NoSuchElementException e) {}
-			if (target != null && isChildInView(target)) {
-				// Scroll one more stop after the target item is visible.
-				// Without this, clicking the target in IE9 and Firefox doesn't
-				// work sometimes.
-				int to = (int) (scrollPosition + singleStep);
-				scrollTo(direction, to);
-				driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
-				return driver.getWidgetForElement(target);
-			}
+        Long singleStep = getScrollStep(direction);
+        Long maximum = getMaximum(direction);
+        Long scrollPosition = getScrollPosition(direction);
 
-			int to = (int) (scrollPosition + singleStep);
-			scrollTo(direction, to);
-			scrollPosition = getScrollPosition(direction);
-		}
+        while (scrollPosition < maximum) {
+            // Virtual list items are created on demand, so query the DOM again
+            try {
+                target = contentElement.findElement(locator);
+            } catch (NoSuchElementException e) {
+            }
+            if (target != null && isChildInView(target)) {
+                // Scroll one more stop after the target item is visible.
+                // Without this, clicking the target in IE9 and Firefox doesn't
+                // work sometimes.
+                int to = (int) (scrollPosition + singleStep);
+                scrollTo(direction, to);
+                driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
+                return driver.getWidgetForElement(target);
+            }
 
-		//TODO: Find out the original timeout and re-apply it
-		driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
-		return null;
-	}
-	
-	public Boolean isChildInView(WebElement child) {
-		Point paneLocation = contentElement.getLocation();
-		int paneTop = paneLocation.getY();
-		int paneLeft = paneLocation.getX();
-		Dimension paneSize = contentElement.getSize();
-		int paneHeight = paneSize.height;
-		int paneBottom = paneTop + paneHeight;
-		int paneWidth = paneSize.width;
-		int paneRight = paneLeft + paneWidth;
-		
-		Point childLocation = child.getLocation();
-		int childTop = childLocation.getY();
-		int childLeft = childLocation.getX();
-		
-		if (childTop >= paneTop && childTop < paneBottom &&
-			childLeft >= paneLeft && childLeft < paneRight) {
-			return true;
-		}
-		
-		return false;
-	}
+            int to = (int) (scrollPosition + singleStep);
+            scrollTo(direction, to);
+            scrollPosition = getScrollPosition(direction);
+        }
+
+        //TODO: Find out the original timeout and re-apply it
+        driver.manage().timeouts().implicitlyWait(4, TimeUnit.SECONDS);
+        return null;
+    }
+
+    public Boolean isChildInView(WebElement child) {
+        Point paneLocation = contentElement.getLocation();
+        int paneTop = paneLocation.getY();
+        int paneLeft = paneLocation.getX();
+        Dimension paneSize = contentElement.getSize();
+        int paneHeight = paneSize.height;
+        int paneBottom = paneTop + paneHeight;
+        int paneWidth = paneSize.width;
+        int paneRight = paneLeft + paneWidth;
+
+        Point childLocation = child.getLocation();
+        int childTop = childLocation.getY();
+        int childLeft = childLocation.getX();
+
+        if (childTop >= paneTop && childTop < paneBottom &&
+            childLeft >= paneLeft && childLeft < paneRight) {
+            return true;
+        }
+
+        return false;
+    }
 
 }

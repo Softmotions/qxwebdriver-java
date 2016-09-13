@@ -119,14 +119,7 @@ public abstract class By extends org.openqa.selenium.By {
 					// OperaDriver.executeScript won't accept null as an argument
 					result = jsExecutor.executeScript(script, locator, onlySeeable);
 				} else {
-					try {
-						result = jsExecutor.executeScript(script, locator, onlySeeable, (WebElement) contextElement);
-					} catch(com.opera.core.systems.scope.exceptions.ScopeException e) {
-						// OperaDriver will sometimes throw a ScopeException if executeScript is called
-						// with an OperaWebElement as argument
-						return null;
-					}
-
+                    result = jsExecutor.executeScript(script, locator, onlySeeable, (WebElement) contextElement);
 				}
 				return (WebElement) result;
 

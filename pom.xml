@@ -1,8 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.oneandone</groupId>
   <artifactId>qxwebdriver-java</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
+
+  <parent>
+    <groupId>softmotions</groupId>
+    <artifactId>softmotions-base-pom</artifactId>
+    <version>1.1.0</version>
+  </parent>
+
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -10,6 +17,29 @@
   </properties>
   <name>QxWebDriver</name>
   <description>WebDriver testing support for qooxdoo desktop applications</description>
+
+
+  <repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>softmotions_repository</id>
+      <url>https://repo.softmotions.com/repository/softmotions-public</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
+
   <build>
     <testResources>
       <testResource>
@@ -48,7 +78,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.12</version>
+        <version>2.19.1</version>
         <executions>
           <execution>
             <id>browser-test</id>
@@ -75,7 +105,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.5.1</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -84,7 +114,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>yuicompressor-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.5.1</version>
         <executions>
           <execution>
             <phase>process-resources</phase>
@@ -96,6 +126,19 @@
         <configuration>
           <jswarn>false</jswarn>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -109,12 +152,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>2.53.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.opera</groupId>
-      <artifactId>operadriver</artifactId>
-      <version>1.1</version>
+      <version>2.53.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -123,22 +161,12 @@
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>1.1</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
-     <groupId>org.apache.httpcomponents</groupId>
-     <artifactId>httpclient</artifactId>
-     <version>4.3.5</version>
-   </dependency>
-    <dependency>
-    <groupId>io.selendroid</groupId>
-      <version>0.8.0</version>
-      <artifactId>selendroid-standalone</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.selendroid</groupId>
-      <version>0.8.0</version>
-      <artifactId>selendroid-client</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-exec</artifactId>
+      <version>1.3</version>
     </dependency>
   </dependencies>
   <dependencyManagement>
@@ -146,7 +174,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

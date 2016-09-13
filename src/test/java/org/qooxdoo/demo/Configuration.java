@@ -1,8 +1,5 @@
 package org.qooxdoo.demo;
 
-import io.selendroid.SelendroidCapabilities;
-import io.selendroid.SelendroidDriver;
-
 import java.net.URL;
 
 import org.oneandone.qxwebdriver.QxWebDriver;
@@ -17,7 +14,7 @@ public class Configuration {
 
 	protected static DesiredCapabilities getCapabilities (String browserName) {
 		DesiredCapabilities capabilities = null;
-		
+
 		if (browserName.equals("chrome")) {
 			capabilities = DesiredCapabilities.chrome();
 		}
@@ -45,10 +42,10 @@ public class Configuration {
 		else {
 			capabilities = DesiredCapabilities.firefox();
 		}
-		
+
 		return capabilities;
 	}
-	
+
 	protected static Platform getPlatform(String platformName) {
 		Platform platform = null;
 		if (platformName.equals("linux")) {
@@ -75,23 +72,20 @@ public class Configuration {
 		else {
 			platform = Platform.ANY;
 		}
-		
+
 		return platform;
 	}
-	
+
 	public static WebDriver getWebDriver() throws Exception {
 		WebDriver webDriver;
 		String hubUrl = System.getProperty("org.qooxdoo.demo.huburl");
 		String browserName = System.getProperty("org.qooxdoo.demo.browsername", "firefox");
 		String browserVersion = System.getProperty("org.qooxdoo.demo.browserversion");
 		String platformName = System.getProperty("org.qooxdoo.demo.platform", "any");
-		
+
 		if (hubUrl == null) {
 			if (browserName.equals("chrome")) {
 				webDriver = new ChromeDriver();
-			} else if (browserName.equals("android")) {
-				DesiredCapabilities caps = SelendroidCapabilities.android();
-				webDriver = new SelendroidDriver(caps);
 			} else {
 				webDriver = new FirefoxDriver();
 			}
@@ -105,7 +99,7 @@ public class Configuration {
 		}
 		return webDriver;
 	}
-	
+
 	public static QxWebDriver getQxWebDriver() throws Exception {
 		WebDriver webDriver = getWebDriver();
 		QxWebDriver qxWebDriver = new QxWebDriver(webDriver);

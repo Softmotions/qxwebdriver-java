@@ -33,7 +33,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -418,7 +417,9 @@ public class WidgetImpl implements org.oneandone.qxwebdriver.ui.Widget {
 
 	@Override
 	public Rectangle getRect() {
-		return contentElement.getRect();
+		Point location = contentElement.getLocation();
+		Dimension size = contentElement.getSize();
+		return new Rectangle(location.x, location.y, size.height, size.width);
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import org.oneandone.qxwebdriver.ui.Scrollable;
 import org.oneandone.qxwebdriver.ui.Widget;
 import org.oneandone.qxwebdriver.ui.core.WidgetImpl;
 import org.oneandone.qxwebdriver.ui.table.pane.Scroller;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
 public class Table extends WidgetImpl implements Scrollable {
@@ -228,13 +229,22 @@ public class Table extends WidgetImpl implements Scrollable {
 		} else {
 			cellPath = ".//div[contains(@class, 'qooxdoo-table-cell') and position() = " + (colIdx + 1) + "]";
 		}
-		List<WebElement> els = findElements(org.openqa.selenium.By.xpath(cellPath));
 
-		for (int rowIdx = 0; rowIdx < els.size(); rowIdx++) {
-			String s = els.get(rowIdx).getText().trim();
-			if (text.equals(s))
-				return rowIdx;
-		}
+		do {
+			List<WebElement> els = findElements(org.openqa.selenium.By.xpath(cellPath));
+			try {
+				for (int rowIdx = 0; rowIdx < els.size(); rowIdx++) {
+					String s = els.get(rowIdx).getText().trim();
+					if (text.equals(s))
+						return rowIdx;
+				}
+			} catch (StaleElementReferenceException ignored) {
+				continue;
+			}
+			break;
+		} while (true);
+
+
 		return -1L;
 	}
 	
@@ -277,13 +287,24 @@ public class Table extends WidgetImpl implements Scrollable {
 		} else {
 			cellPath = ".//div[contains(@class, 'qooxdoo-table-cell') and position() = " + (colIdx + 1) + "]";
 		}
-		List<WebElement> els = findElements(org.openqa.selenium.By.xpath(cellPath));
+
 		List<Long> rowIdxs = new ArrayList<Long>();
-		for (int rowIdx = 0; rowIdx < els.size(); rowIdx++) {
-			String s = els.get(rowIdx).getText().trim();
-			if (text.equals(s))
-				rowIdxs.add((long) rowIdx);
-		}
+		do {
+			List<WebElement> els = findElements(org.openqa.selenium.By.xpath(cellPath));
+			try {
+				for (int rowIdx = 0; rowIdx < els.size(); rowIdx++) {
+					String s = els.get(rowIdx).getText().trim();
+					if (text.equals(s))
+						rowIdxs.add((long) rowIdx);
+				}
+			} catch (StaleElementReferenceException ignored) {
+				rowIdxs = new ArrayList<Long>();
+				continue;
+			}
+			break;
+		} while (true);
+
+
 		return rowIdxs;
 	}
 	

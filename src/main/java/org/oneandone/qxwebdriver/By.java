@@ -112,33 +112,40 @@ public abstract class By extends org.openqa.selenium.By {
 			}
 
 			String script  = JavaScript.INSTANCE.getValue("qxh");
+			int c = 0;
+			do {
+				try {
+					Object result;
+					if (contextElement == null) {
+						// OperaDriver.executeScript won't accept null as an argument
+						result = jsExecutor.executeScript(script, locator, onlySeeable);
+					} else {
+						result = jsExecutor.executeScript(script, locator, onlySeeable, (WebElement) contextElement);
+					}
+					return (WebElement) result;
 
-			try {
-				Object result;
-				if (contextElement == null) {
-					// OperaDriver.executeScript won't accept null as an argument
-					result = jsExecutor.executeScript(script, locator, onlySeeable);
-				} else {
-                    result = jsExecutor.executeScript(script, locator, onlySeeable, (WebElement) contextElement);
+				} catch (org.openqa.selenium.WebDriverException e) {
+					String msg = e.getMessage();
+					if (msg.contains("getDomElement") && c++ < 10) { //duty hack
+						try {
+							Thread.sleep((long) Math.ceil(Math.random() * 100.0));
+						} catch (InterruptedException ignored) {
+						}
+						continue;
+					}
+					if (msg.contains("Error resolving qxh path") ||
+						// IEDriver doesn't include the original JS exception's message :(
+						msg.contains("JavaScript error")) {
+						return null;
+					} else if (msg.contains("Illegal path step")) {
+						String reason = "Invalid qxh selector " + locator.toString();
+						throw new InvalidSelectorException(reason, e);
+					} else {
+						String reason = "Error while processing selector " + locator.toString();
+						throw new org.openqa.selenium.WebDriverException(reason, e);
+					}
 				}
-				return (WebElement) result;
-
-			} catch(org.openqa.selenium.WebDriverException e) {
-				String msg = e.getMessage();
-				if (msg.contains("Error resolving qxh path") ||
-					// IEDriver doesn't include the original JS exception's message :(
-					msg.contains("JavaScript error")) {
-					return null;
-				}
-				else if (msg.contains("Illegal path step")) {
-					String reason = "Invalid qxh selector " + locator.toString();
-					throw new InvalidSelectorException(reason, e);
-				}
-				else {
-					String reason = "Error while processing selector " + locator.toString();
-					throw new org.openqa.selenium.WebDriverException(reason, e);
-				}
-			}
+			} while (true);
 		}
 
 		public String toString() {

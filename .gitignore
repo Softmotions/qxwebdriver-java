@@ -12,5 +12,6 @@ target/
 .settings/
 .classpath
 .project
+.idea/*
 
 /chromedriver.log
